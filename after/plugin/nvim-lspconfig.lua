@@ -15,23 +15,46 @@ require('mason-lspconfig').setup({
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- define your keymap here
-local lsp_attach = function(client, bufnr)
+lsp.on_attach(function(client, bufnr)
 	local opts = { buffer = bufnr, noremap = true, silent = true }
 	vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
 	vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 	vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-	vim.keymap.set('n', '<S-F6>', vim.lsp.buf.rename, opts)
 	vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 	vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-end
+    vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references, {})
+    vim.keymap.set('n', '<leader>lf', function()
+        vim.lsp.buf.format({
+            async = false,
+            timeout_ms = 2000,
+        })
+    end, opts)
+    vim.keymap.set('n', 'lf', '<cmd>lua vim.lsp.buf.format{ aync = true }<cr>', opts)
+end)
+	vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
 
 -- autocomplete
 local cmp = require('cmp')
+-- setup source
+-- installed sources
+cmp.setup({
+    sources = {
+        {name = 'path'}, --file paths 
+        {name = 'nvim_lsp', keyword_length = 3}, -- from language servers 
+        {name = 'nvim_lsp_signature_help'}, -- display function signature with current parameters
+        {name = 'nvim_lua', keyword_length = 2}, -- complete nvim's Lua runtime API
+    },
+    window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+    }
+})
+
 local cmp_select = {behavior = cmp.SelectBehavior.Select}
 local cmp_mappings = lsp.defaults.cmp_mappings({
   ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
   ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+  ['<CR>'] = cmp.mapping.confirm({ select = true }),
   ["<C-Space>"] = cmp.mapping.complete(),
 })
 
@@ -63,7 +86,7 @@ lspconfig.gopls.setup {
 	default_config = {
 		cmd = {"gopls", "serve"},
 		filetypes = {"go", "gomod"},
-		root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+		root_dir = util.root_pattern("go.mod", ".git"),
 		settings = {
 			gopls = {
 				analyses = {
@@ -75,14 +98,28 @@ lspconfig.gopls.setup {
 	},
 }
 
+-- rust setup
+lsp.skip_server_setup({'rust_analyzer'})
+lsp.setup()
+local rust_tools = require('rust-tools')
+rust_tools.setup({
+  server = {
+    on_attach = function()
+      vim.keymap.set('n', '<leader>ca', rust_tools.hover_actions.hover_actions, {buffer = bufnr})
+    end
+  }
+})
+
 
 -- format on save
 lsp.format_on_save({
 	servers = {
 		['gopls'] = {'go', 'gomod', 'mod'},
 		['pyright'] = {'py'},
+        ['rust_analyzer']= { 'rs' },
 	}
 })
 
-lsp.setup()
+-- python setup
 
+lsp.setup()

@@ -3,6 +3,19 @@
 -- Only required if you have packer configured as `opt`
 vim.cmd [[packadd packer.nvim]]
 
+-- Autocommand that reloads neovim whenever you save packer.lua
+vim.api.nvim_create_autocmd("BufWritePost", {
+    -- clear = true (delele all cmd in group)
+    group = vim.api.nvim_create_augroup("packer_user_config", { clear = true }),
+
+    pattern = "packer.lua",
+    callback = function()
+        vim.cmd("PackerSync")
+    end
+})
+
+
+
 return require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
@@ -34,4 +47,43 @@ return require('packer').startup(function(use)
 	}
 
     use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate'})
+
+    use('jose-elias-alvarez/null-ls.nvim')
+
+    use {
+        'numToStr/Comment.nvim',
+        config = function()
+            require('Comment').setup()
+        end
+    }
+
+    -- this for surrouding words 
+    use({
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup({
+                -- Configuration here, or leave empty to use defaults
+            })
+        end
+    })
+
+    -- manage mulitple terminal windows 
+    use {"akinsho/toggleterm.nvim", tag = '*'}
+
+    -- file explorer
+    use {
+      'nvim-tree/nvim-tree.lua',
+    }
+
+    -- rust
+    use { 'simrat39/rust-tools.nvim', }
+
+    -- golang built tools
+    use { 'ray-x/go.nvim' }
+    use 'ray-x/guihua.lua' -- recommended if need floating window support
+    use {
+      'rmagatti/auto-session',
+    }
 end)
+

@@ -19,7 +19,15 @@ vim.keymap.set("x", "<leader>p", "\"_dP")
 
 
 -- yank to system clipboard (without switch clipboards)
-vim.keymap.set("n", "<leader>y", "\"+y")
-vim.keymap.set("v", "<leader>y", "\"+y")
+vim.keymap.set("n", "<leader>yy", "\"+y")
+vim.keymap.set("v", "<leader>yy", "\"+y")
+
+-- yank all file
+vim.keymap.set("n", "<leader>yf", "gg\"+yG")
+vim.keymap.set("v", "<leader>yf", "gg\"+yG")
+
+
+-- netrw
+vim.keymap.set("n", "<leader>pe", "")
 
 
