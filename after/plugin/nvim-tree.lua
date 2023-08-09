@@ -6,13 +6,6 @@ end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- local config_status_ok, nvim_tree_config = pcall(require, "nvim-tree.config")
--- if not config_status_ok then
---   return
--- end
-
--- local tree_cb = nvim_tree_config.nvim_tree_callback
-
 local api = require "nvim-tree.api"
 local options = { noremap = true, silent = true, nowait = true } 
 local keymap = vim.keymap
@@ -50,20 +43,26 @@ nvim_tree.setup {
     show_on_dirs = true,
   },
   view = {
-    width = 30,
+    -- width = 30,
+    adaptive_size = true,
     side = "left",
+  },
+  actions = {
+      open_file = {
+          resize_window = true,
+      },
   },
 }
 
 -- this cmd will check NvimTree was openned when it is restored and refresh it 
-vim.api.nvim_create_autocmd({ 'BufEnter' }, {
-  pattern = 'NvimTree*',
-  callback = function()
-    local api = require('nvim-tree.api')
-    local view = require('nvim-tree.view')
-
-    if not view.is_visible() then
-      api.tree.open()
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd({ 'BufEnter' }, {
+--   pattern = 'NvimTree*',
+--   callback = function()
+--     local api = require('nvim-tree.api')
+--     local view = require('nvim-tree.view')
+--
+--     if not view.is_visible() then
+--       api.tree.open()
+--     end
+--   end,
+-- })

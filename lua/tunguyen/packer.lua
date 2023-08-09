@@ -85,5 +85,13 @@ return require('packer').startup(function(use)
     use {
       'rmagatti/auto-session',
     }
+    use {"ellisonleao/glow.nvim", config = function() require("glow").setup() end}
+
+    use({
+        "L3MON4D3/LuaSnip",
+        -- follow latest release.
+        tag = "v2.0.0", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+        after = 'nvim-cmp',
+    })
 end)
 

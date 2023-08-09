@@ -26,8 +26,3 @@ vim.keymap.set("v", "<leader>yy", "\"+y")
 vim.keymap.set("n", "<leader>yf", "gg\"+yG")
 vim.keymap.set("v", "<leader>yf", "gg\"+yG")
 
-
--- netrw
-vim.keymap.set("n", "<leader>pe", "")
-
-

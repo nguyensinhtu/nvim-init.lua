@@ -34,15 +34,21 @@ end)
 	vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
 
 -- autocomplete
-local cmp = require('cmp')
 -- setup source
 -- installed sources
+local cmp = require('cmp')
 cmp.setup({
+    snippet = {
+        expand = function(args)
+            require('luasnip').lsp_expand(args.body)
+        end
+    },
     sources = {
         {name = 'path'}, --file paths 
         {name = 'nvim_lsp', keyword_length = 3}, -- from language servers 
         {name = 'nvim_lsp_signature_help'}, -- display function signature with current parameters
         {name = 'nvim_lua', keyword_length = 2}, -- complete nvim's Lua runtime API
+        {name = 'luasnip', keyword_length = 2},
     },
     window = {
         completion = cmp.config.window.bordered(),
@@ -81,7 +87,18 @@ lsp.setup()
 local lspconfig = require('lspconfig.configs')
 local util = require("lspconfig/util")
 
--- golang setup
+------ Golang setup ------
+require("go").setup({
+    go = "go", -- go command, can be go[default] or go1.18beta1
+    goimport = "gopls", -- goimport command, can be gopls[default] or goimport
+    fillstruct = "gopls", -- can be nil (use fillstruct, slower) and gopls
+    gofmt = "gofumpt", -- gofmt cmd,
+    max_line_len = 120, -- max line length in goline format
+    verbse = false, -- output loginf in message
+    gopls_cmd = nil, -- if you need to specify gopls path and cmd, e.g {"/home/user/lsp/gopls", "-logfile","/var/log/gopls.log" }
+    luasnip = true,
+})
+
 lspconfig.gopls.setup {
 	default_config = {
 		cmd = {"gopls", "serve"},
@@ -93,12 +110,14 @@ lspconfig.gopls.setup {
 					unusedparams = true,
 				},
 				staticcheck = true,
+                usePlaceholders = true,
+                completeUnimported = true,
 			},
 		},
 	},
 }
 
--- rust setup
+------ Rust setup ------
 lsp.skip_server_setup({'rust_analyzer'})
 lsp.setup()
 local rust_tools = require('rust-tools')
@@ -111,6 +130,9 @@ rust_tools.setup({
 })
 
 
+------ Python setup ------
+lsp.setup()
+
 -- format on save
 lsp.format_on_save({
 	servers = {
@@ -119,7 +141,3 @@ lsp.format_on_save({
         ['rust_analyzer']= { 'rs' },
 	}
 })
-
--- python setup
-
-lsp.setup()

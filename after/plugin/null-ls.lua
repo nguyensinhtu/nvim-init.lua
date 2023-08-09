@@ -12,9 +12,10 @@ local diagnostics = null_ls.builtins.diagnostics
 null_ls.setup({
 
     sources = {
-        formatting.black.with( {extra_args = { "--fast" } } ),
-        formatting.shfmt,
-        formatting.prettier.with({ extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" } }),
+        null_ls.builtins.formatting.black.with( {extra_args = { "--fast" } } ),
+        null_ls.builtins.formatting.shfmt,
+        null_ls.builtins.formatting.prettier.with({ extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" } }),
+        null_ls.builtins.formatting.sqlfluff.with({extra_args = { "--dialect", "redshift" }, })
     }
 })
 
