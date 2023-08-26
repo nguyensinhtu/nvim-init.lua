@@ -17,6 +17,10 @@ keymap.set('n', '<leader>pe', function()
         api.tree.toggle()
     end
 end, options)
+keymap.set('n', '<leader>pt', function()
+    api.tree.toggle()
+end, options)
+
 -- this is like a double linked-list, every new opening item will be insert at the beginning of the list, so the prev with will be the next in the list  
 keymap.set('n', '<leader>pw', function()
     api.node.navigate.opened.prev()

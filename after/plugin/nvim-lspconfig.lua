@@ -97,6 +97,19 @@ require("go").setup({
     verbse = false, -- output loginf in message
     gopls_cmd = nil, -- if you need to specify gopls path and cmd, e.g {"/home/user/lsp/gopls", "-logfile","/var/log/gopls.log" }
     luasnip = true,
+    run_in_floaterm = true, -- floating window
+    lsp_cfg = true, -- using non-default lspconfig
+})
+
+
+-- Run GoFmt before write file
+local format_sync_grp = vim.api.nvim_create_augroup("GoImport", {})
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
+  callback = function()
+        vim.cmd("GoFmt") 
+  end,
+  group = format_sync_grp,
 })
 
 lspconfig.gopls.setup {

@@ -85,6 +85,7 @@ return require('packer').startup(function(use)
     use {
       'rmagatti/auto-session',
     }
+
     use {"ellisonleao/glow.nvim", config = function() require("glow").setup() end}
 
     use({
@@ -92,6 +93,11 @@ return require('packer').startup(function(use)
         -- follow latest release.
         tag = "v2.0.0", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
         after = 'nvim-cmp',
+        dependencies = { "rafamadriz/friendly-snippets" },
+
     })
+
+    use { 'saadparwaiz1/cmp_luasnip' }
+
 end)
 
