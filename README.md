@@ -1,2 +1,6 @@
 # nvim-init.lua
-complete setup nvim for GoLang, Python, Rust and more
+Complete setup nvim for GoLang, Python, Rust and more
+
+
+# Requirements
+- [lazygit](https://github.com/jesseduffield/lazygit)
