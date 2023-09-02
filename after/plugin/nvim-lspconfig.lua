@@ -2,6 +2,10 @@ local lsp = require("lsp-zero")
 
 lsp.preset("recommended")
 
+
+-- skip jdtls to make sure lsp-zero does not start jdtls
+lsp.skip_server_setup({'jdtls'})
+
 require("mason").setup()
 require('mason-lspconfig').setup({
   ensure_installed = {
