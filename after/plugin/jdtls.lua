@@ -1,16 +1,40 @@
-local home = os.getenv('HOME')
-local jdtls = require('jdtls')
+local jdtls_ok, jdtls = pcall(require, "jdtls")
+if not jdtls_ok then
+  vim.notify "JDTLS not found, install with `:LspInstall jdtls`"
+  return
+end
+
+-- home dir
+local home_dir = os.getenv('HOME')
+
+-- os name, eg: Linux, Macos
+local osname = vim.loop.os_uname().sysname
+
+local jdtls_path = vim.fn.stdpath('data') .. "/mason/packages/jdtls"
+local path_to_lsp_config = jdtls_path .. "/config_linux"
+if vim.fn.has('mac') == 1 then
+    path_to_lsp_config = jdtls_path .. '/config_mac'
+elseif vim.fn.has('unix') == 1 then
+    path_to_lsp_config = jdtls_path .. '/config_linux'
+elseif vim.fn.has('win32') == 1 then
+    path_to_lsp_config = jdtls_path .. '/config_win'
+end
+
+local path_to_plugins = jdtls_path .. "/plugins/"
+local path_to_jar = path_to_plugins .. "org.eclipse.equinox.launcher_1.6.500.v20230717-2134.jar"
+local lombok_path = path_to_plugins .. "lombok.jar"
 
 -- File types that signify a Java project's root directory. This will be
 -- used by eclipse to determine what constitutes a workspace
-local root_markers = {'gradlew', 'mvnw', '.git'}
+local root_markers = {'gradlew', 'mvnw', '.git', 'pom.xml', 'build.gradle'}
 local root_dir = require('jdtls.setup').find_root(root_markers)
 
 -- eclipse.jdt.ls stores project specific data within a folder. If you are working
 -- with multiple different projects, each project must use a dedicated data directory.
 -- This variable is used to configure eclipse to use the directory name of the
 -- current project found using the root_marker as the folder for project specific data.
-local workspace_folder = home .. "/.local/share/eclipse/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
+local workspace_folder = home_dir .. "/.local/share/eclipse/" .. vim.fn.fnamemodify(root_dir, ":p:h:t")
+os.execute("mkdir " .. workspace_folder)
 
 -- Helper function for creating keymaps
 function nnoremap(rhs, lhs, bufopts, desc)
@@ -48,6 +72,19 @@ local on_attach = function(client, bufnr)
     { noremap=true, silent=true, buffer=bufnr, desc = "Extract method" })
 end
 
+
+-- Setup jdk dir per os
+local jdk17ForRun = "/usr/lib/jvm/jdk-20/bin/java" 
+local jdkDirs = {
+    ["JavaSE-17"] = "/usr/lib/jvm/jdk-20",
+    ["JavaSE-11"] = "/usr/lib/jvm/java-11-openjdk-amd64/",
+    ["JavaSE-1.8"] = "/usr/lib/jvm/java-8-openjdk-amd64/"
+}
+if osname == "Mac" then
+end
+
+
+
 local config = {
   flags = {
     debounce_text_changes = 80,
@@ -65,7 +102,7 @@ local config = {
           -- Use Google Java style guidelines for formatting
           -- To use, make sure to download the file from https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml
           -- and place it in the ~/.local/share/eclipse directory
-          url = "/.local/share/eclipse/eclipse-java-google-style.xml",
+          url = home_dir .. ".local/share/eclipse/eclipse-java-google-style.xml",
           profile = "GoogleStyle",
         },
       },
@@ -115,15 +152,15 @@ local config = {
         runtimes = {
           {
             name = "JavaSE-17",
-            path = home .. "/.asdf/installs/java/corretto-17.0.4.9.1",
+            path = jdkDirs["JavaSE-17"],
           },
           {
             name = "JavaSE-11",
-            path = home .. "/.asdf/installs/java/corretto-11.0.16.9.1",
+            path = jdkDirs["JavaSE-11"],
           },
           {
             name = "JavaSE-1.8",
-            path = home .. "/.asdf/installs/java/corretto-8.352.08.1"
+            path = jdkDirs["JavaSE-1.8"],
           },
         }
       }
@@ -135,7 +172,7 @@ local config = {
   -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
   -- for the full list of options
   cmd = {
-    home .. "/.asdf/installs/java/corretto-17.0.4.9.1/bin/java",
+    jdk17ForRun,
     '-Declipse.application=org.eclipse.jdt.ls.core.id1',
     '-Dosgi.bundles.defaultStartLevel=4',
     '-Declipse.product=org.eclipse.jdt.ls.core.product',
@@ -146,15 +183,16 @@ local config = {
     '--add-opens', 'java.base/java.util=ALL-UNNAMED',
     '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
     -- If you use lombok, download the lombok jar and place it in ~/.local/share/eclipse
-    '-javaagent:' .. home .. '/.local/share/eclipse/lombok.jar',
+    '-javaagent:' .. lombok_path,
 
     -- The jar file is located where jdtls was installed. This will need to be updated
     -- to the location where you installed jdtls
-    '-jar', vim.fn.glob('/opt/homebrew/Cellar/jdtls/1.18.0/libexec/plugins/org.eclipse.equinox.launcher_*.jar'),
+    -- should be installed by mason
+    '-jar', path_to_jar,
 
     -- The configuration for jdtls is also placed where jdtls was installed. This will
     -- need to be updated depending on your environment
-    '-configuration', '/opt/homebrew/Cellar/jdtls/1.18.0/libexec/config_mac',
+    '-configuration', path_to_lsp_config,
 
     -- Use the workspace_folder defined above to store data for this project
     '-data', workspace_folder,
