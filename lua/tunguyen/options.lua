@@ -36,3 +36,11 @@ vim.api.nvim_set_hl(0, 'FloatBorder', {bg='#3B4252', fg='#5E81AC'})
 vim.api.nvim_set_hl(0, 'NormalFloat', {bg='#3B4252'})
 vim.api.nvim_set_hl(0, 'TelescopeNormal', {bg='#3B4252'})
 vim.api.nvim_set_hl(0, 'TelescopeBorder', {bg='#3B4252'})
+
+-- disable language provider support (lua and vimscript plugins only)
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_python_provider = 0
+vim.g.loaded_python3_provider = 0
+

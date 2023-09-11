@@ -2,12 +2,19 @@ local lsp = require("lsp-zero")
 
 lsp.preset("recommended")
 
+
+-- skip jdtls to make sure lsp-zero does not start jdtls
+lsp.skip_server_setup({'jdtls'})
+
 require("mason").setup()
 require('mason-lspconfig').setup({
   ensure_installed = {
     -- Replace these with whatever servers you want to install
     'pyright',
     'gopls',
+    'ruff',
+    'ruff_lsp',
+    'black',
   }
 })
 
@@ -144,6 +151,14 @@ rust_tools.setup({
 
 
 ------ Python setup ------
+require('lspconfig').ruff_lsp.setup {
+  init_options = {
+    settings = {
+      -- Any extra CLI arguments for `ruff` go here.
+      args = {},
+    }
+  }
+}
 lsp.setup()
 
 -- format on save
