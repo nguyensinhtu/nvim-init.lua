@@ -15,6 +15,7 @@ require('mason-lspconfig').setup({
     'ruff',
     'ruff_lsp',
     'black',
+    'isort',
   }
 })
 
