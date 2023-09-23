@@ -3,6 +3,11 @@ if not status_ok then
 	return
 end
 
+local create_cmd = function(cmd, func, opt)
+  opt = vim.tbl_extend('force', { desc = 'go.nvim ' .. cmd }, opt or {})
+  vim.api.nvim_create_user_command(cmd, func, opt)
+end
+
 toggleterm.setup({
 	size = 20,
 	open_mapping = [[<c-\>]],
@@ -65,7 +70,6 @@ function _HTOP_TOGGLE()
 end
 
 local python = Terminal:new({ cmd = "python", hidden = true })
-
 function _PYTHON_TOGGLE()
 	python:toggle()
 end

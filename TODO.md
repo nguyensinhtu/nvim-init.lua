@@ -3,3 +3,4 @@
 - go.nvim didn't show full error message 
 - go.nvim didn't show up floating window
 - show git diff realtime
+- execute python file in floating window
