@@ -2,10 +2,6 @@ local lsp = require("lsp-zero")
 
 lsp.preset("recommended")
 
-
--- skip jdtls to make sure lsp-zero does not start jdtls
-lsp.skip_server_setup({'jdtls'})
-
 require("mason").setup()
 require('mason-lspconfig').setup({
   ensure_installed = {
@@ -15,6 +11,7 @@ require('mason-lspconfig').setup({
     'ruff',
     'ruff_lsp',
     'black',
+    'jdtls',
   }
 })
 
@@ -169,3 +166,8 @@ lsp.format_on_save({
         ['rust_analyzer']= { 'rs' },
 	}
 })
+
+--- java ---
+-- skip jdtls to make sure lsp-zero does not start jdtls
+lsp.skip_server_setup({'jdtls'})
+lsp.setup()
