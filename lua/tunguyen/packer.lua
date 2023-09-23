@@ -100,5 +100,18 @@ return require('packer').startup(function(use)
     use { 'saadparwaiz1/cmp_luasnip' }
 
     use { 'mfussenegger/nvim-jdtls' }
+
+    use { 'folke/tokyonight.nvim' }
+
+    use {
+      "nvim-neotest/neotest",
+      dependencies = {
+        "antoinemadec/FixCursorHold.nvim"
+      },
+      requires = {
+          -- others adapter here: https://github.com/nvim-neotest/neotest#supported-runners
+          "nvim-neotest/neotest-python"
+      }
+    }
 end)
 
