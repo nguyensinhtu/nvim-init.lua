@@ -14,7 +14,46 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 
 
---- snipets
+-- TESTIGN AND CMDS ---
+local create_cmd = function(cmd, func, opt)
+  opt = vim.tbl_extend('force', { desc = 'python_nvim ' .. cmd }, opt or {})
+  vim.api.nvim_create_user_command(cmd, func, opt)
+end
+
+require("neotest").setup({
+  adapters = {
+    require("neotest-python")({
+        -- Extra arguments for nvim-dap configuration
+        -- See https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for values
+        dap = { justMyCode = false },
+        -- Command line arguments for runner
+        -- Can also be a function to return dynamic values
+        args = {"--log-level", "DEBUG"},
+        -- Runner to use. Will use pytest if available by default.
+        -- Can be a function to return dynamic value.
+        runner = "pytest",
+        -- Custom python path for the runner.
+        -- Can be a string or a list of strings.
+        -- Can also be a function to return dynamic value.
+        -- If not provided, the path will be inferred by checking for 
+        -- virtual envs in the local directory and for Pipenev/Poetry configs
+        python = {".venv/bin/python", ".pyenv/bin/python", "pyenv/bin/python"},
+        -- Returns if a given file path is a test file.
+        -- NB: This function is called a lot so don't perform any heavy tasks within it.
+        -- is_test_file = function(file_path)
+          -- ...
+        -- end,
+        
+    })
+  }
+})
+
+create_cmd('PyTestFile', function(opts)
+    require("neotest").run.run(vim.fn.expand("%"))
+end, {})
+
+
+--- SNIPETS ---
 local ls = require("luasnip")
 
 -- This is a snippet creator
@@ -140,6 +179,53 @@ local snippets = {
 			i(3, "pass"),
 		})
 	),
+
+    -- logging
+    s(
+        { trig = "lod", dscr = "Log debugs" },
+        fmt(
+            "logger.debug(\"{}\")" 
+            , {
+                ls.i(1, "message"), 
+            }
+        ),
+        in_function
+    ),
+
+    s(
+        { trig = "lodf", dscr = "Log debugs with format string" },
+        fmt(
+            "logger.debug(\"{}\", {})" 
+            , {
+                ls.i(1, "message"), 
+                ls.i(2, "vars"), 
+            }
+        ),
+        in_function
+    ),
+
+    s(
+        { trig = "lode", dscr = "Log debugs with extra param" },
+        fmt(
+            "logger.debug(\"{}\", extra{{{}}})" 
+            , {
+                ls.i(1, "message"), 
+                ls.i(2, "keyvalue"), 
+            }
+        ),
+        in_function
+    ),
+
+    s(
+        { trig = "loinf", dscr = "Log infos" },
+        fmt(
+            "logger.info(\"{}\")" 
+            , {
+                ls.i(1, "message"), 
+            }
+        ),
+        in_function
+    ),
 }
 
 ls.add_snippets("python", snippets)
