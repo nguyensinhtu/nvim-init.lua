@@ -11,3 +11,13 @@ Complete setup nvim for GoLang, Python, Rust and more
 If using Manson, for installing jdtls, just simply run command `:MasonInstall jdtls`
 
 - jdtls require >= jdk-17, download [here](https://www.oracle.com/java/technologies/downloads/#jdk20-linux)
+
+
+## Scala setup
+- Ensure Coursier is installed locally.2
+    - Language Server: https://get-coursier.io/docs/cli-nstallation
+Macos
+```cmd
+brew install coursier/formulas/coursier
+cs setup
+```
