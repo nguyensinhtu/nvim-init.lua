@@ -13,6 +13,9 @@ require('mason-lspconfig').setup({
     'black',
     'jdtls',
     'isort',
+  },
+  handlers = {
+    jdtls = lsp.noop,
   }
 })
 
@@ -172,3 +175,9 @@ lsp.format_on_save({
 -- skip jdtls to make sure lsp-zero does not start jdtls
 lsp.skip_server_setup({'jdtls'})
 lsp.setup()
+
+
+-- skip scala --
+lsp.skip_server_setup({'metals'})
+lsp.setup()
+
