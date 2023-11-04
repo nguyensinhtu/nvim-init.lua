@@ -26,3 +26,8 @@ vim.keymap.set("v", "<leader>yy", "\"+y")
 vim.keymap.set("n", "<leader>yf", "gg\"+yG")
 vim.keymap.set("v", "<leader>yf", "gg\"+yG")
 
+
+-- unmap
+-- unmap gd (go to global definition is very slow)
+vim.keymap.set("n", "gd", "<NOP>")
+vim.keymap.set("v", "gd", "<NOP>")

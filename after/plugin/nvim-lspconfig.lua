@@ -1,8 +1,8 @@
-local lsp = require("lsp-zero")
+local lsp_zero = require("lsp-zero")
 
-lsp.preset("recommended")
+lsp_zero.preset("recommended")
 
-require("mason").setup()
+require("mason").setup({})
 require('mason-lspconfig').setup({
   ensure_installed = {
     -- Replace these with whatever servers you want to install
@@ -13,16 +13,20 @@ require('mason-lspconfig').setup({
     'black',
     'jdtls',
     'isort',
+  },
+  handlers = {
+    lsp_zero.default_setup,
+    jdtls = lsp_zero.noop,
+    -- metals = lsp_zero.noop,
+    rust_analyzer = lsp_zero.noop,
   }
 })
-
 
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- define your keymap here
-lsp.on_attach(function(client, bufnr)
-	local opts = { buffer = bufnr, noremap = true, silent = true }
-	vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+lsp_zero.on_attach(function(client, bufnr)
+	local opts = { buffer = bufnr, noremap = true, silent = true, remap = false }
 	vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 	vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
 	vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
@@ -31,17 +35,49 @@ lsp.on_attach(function(client, bufnr)
     vim.keymap.set('n', '<leader>lf', function()
         vim.lsp.buf.format({
             async = false,
-            timeout_ms = 2000,
+            timeout_ms = 3200,
         })
     end, opts)
+
     vim.keymap.set('n', 'lf', '<cmd>lua vim.lsp.buf.format{ aync = true }<cr>', opts)
-end)
 	vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+
+    -- dap
+    vim.keymap.set("n", "<leader>dc", function() require("dap").continue() end, opts)
+    vim.keymap.set("n", "<leader>dr", function() require("dap").repl.toggle() end, opts)
+    vim.keymap.set("n", "<leader>dK", function() require("dap.ui.widgets").hover() end, opts)
+
+    vim.keymap.set("n", "<leader>dt", function()
+      require("dap").toggle_breakpoint()
+    end, opts)
+
+    vim.keymap.set("n", "<leader>dso", function()
+      require("dap").step_over()
+    end, opts)
+
+    vim.keymap.set("n", "<leader>dsi", function()
+      require("dap").step_into()
+    end, opts)
+
+    vim.keymap.set("n", "<leader>dl", function()
+      require("dap").run_last()
+    end, opts)
+end)
 
 -- autocomplete
 -- setup source
 -- installed sources
 local cmp = require('cmp')
+local cmp_select = {behavior = cmp.SelectBehavior.Select}
+local cmp_mappings = lsp_zero.defaults.cmp_mappings({
+    ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+    ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ["<C-Space>"] = cmp.mapping.complete(),
+})
+cmp_mappings['<Tab>'] = nil
+cmp_mappings['<S-Tab>'] = nil
+
 cmp.setup({
     snippet = {
         expand = function(args)
@@ -58,26 +94,18 @@ cmp.setup({
     window = {
         completion = cmp.config.window.bordered(),
         documentation = cmp.config.window.bordered(),
-    }
+    },
+    mapping = cmp_mappings,
+    -- Make the first item in completion menu always be selected.
+    preselect = 'item',
+    completion = {
+        completeopt = 'menu,menuone,noinsert'
+    },
 })
 
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<CR>'] = cmp.mapping.confirm({ select = true }),
-  ["<C-Space>"] = cmp.mapping.complete(),
-})
-
-cmp_mappings['<Tab>'] = nil
-cmp_mappings['<S-Tab>'] = nil
-
-lsp.setup_nvim_cmp({
-  mapping = cmp_mappings
-})
 
 -- ui
-lsp.set_preferences({
+lsp_zero.set_preferences({
     suggest_lsp_servers = false,
     sign_icons = {
         error = 'E',
@@ -86,8 +114,6 @@ lsp.set_preferences({
         info = 'I'
     }
 })
-
-lsp.setup()
 
 local lspconfig = require('lspconfig.configs')
 local util = require("lspconfig/util")
@@ -136,8 +162,6 @@ lspconfig.gopls.setup {
 }
 
 ------ Rust setup ------
-lsp.skip_server_setup({'rust_analyzer'})
-lsp.setup()
 local rust_tools = require('rust-tools')
 rust_tools.setup({
   server = {
@@ -157,18 +181,71 @@ require('lspconfig').ruff_lsp.setup {
     }
   }
 }
-lsp.setup()
 
 -- format on save
-lsp.format_on_save({
+lsp_zero.format_on_save({
+    format_opts = {
+        async = false,
+        timeout_ms = 10000,
+    },
 	servers = {
 		['gopls'] = {'go', 'gomod', 'mod'},
 		['pyright'] = {'py'},
         ['rust_analyzer']= { 'rs' },
+        ['metals']= { 'scala' },
 	}
 })
 
---- java ---
--- skip jdtls to make sure lsp-zero does not start jdtls
-lsp.skip_server_setup({'jdtls'})
-lsp.setup()
+
+-- scala
+---
+-- Create the configuration for metals
+---
+local metals_config = require('metals').bare_config()
+metals_config.capabilities = lsp_zero.get_capabilities()
+
+-- Debug settings if you're using nvim-dap
+local dap = require("dap")
+
+dap.configurations.scala = {
+  {
+    type = "scala",
+    request = "launch",
+    name = "RunOrTest",
+    metals = {
+      runType = "runOrTestFile",
+      --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
+    },
+  },
+  {
+    type = "scala",
+    request = "launch",
+    name = "Test Target",
+    metals = {
+      runType = "testTarget",
+    },
+  },
+}
+
+metals_config.on_attach = function(client, bufnr)
+  require("metals").setup_dap()
+end
+
+---
+-- Autocmd that will actually be in charging of starting metals
+---
+local metals_augroup = vim.api.nvim_create_augroup('nvim-metals', {clear = true})
+vim.api.nvim_create_autocmd('FileType', {
+  group = metals_augroup,
+  pattern = {'scala', 'sbt'},
+  callback = function()
+    require('metals').initialize_or_attach(metals_config)
+  end
+})
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = "*.scala",
+--   callback = function()
+--         vim.cmd("MetalsOrganizeImports") 
+--   end,
+--   group = metals_augroup,
+-- })

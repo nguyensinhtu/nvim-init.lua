@@ -12,7 +12,7 @@ local osname = vim.loop.os_uname().sysname
 
 local jdtls_path = vim.fn.stdpath('data') .. "/mason/packages/jdtls"
 local path_to_lsp_config = jdtls_path .. "/config_linux"
-if vim.fn.has('mac') == 1 then
+if vim.fn.has('mac') == 1 or vim.fn.has('Darwin') == 1 then
     path_to_lsp_config = jdtls_path .. '/config_mac'
 elseif vim.fn.has('unix') == 1 then
     path_to_lsp_config = jdtls_path .. '/config_linux'
@@ -42,12 +42,11 @@ function nnoremap(rhs, lhs, bufopts, desc)
   vim.keymap.set("n", rhs, lhs, bufopts)
 end
 
--- The on_attach function is used to set key maps after the language server
+-- The on_attach function is used to set key mps after the language server
 -- attaches to the current buffer
 local on_attach = function(client, bufnr)
   -- Regular Neovim LSP client keymappings
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  nnoremap('gD', vim.lsp.buf.declaration, bufopts, "Go to declaration")
   nnoremap('gd', vim.lsp.buf.definition, bufopts, "Go to definition")
   nnoremap('gi', vim.lsp.buf.implementation, bufopts, "Go to implementation")
   nnoremap('K', vim.lsp.buf.hover, bufopts, "Hover text")
@@ -80,7 +79,8 @@ local jdkDirs = {
     ["JavaSE-11"] = "/usr/lib/jvm/java-11-openjdk-amd64/",
     ["JavaSE-1.8"] = "/usr/lib/jvm/java-8-openjdk-amd64/"
 }
-if osname == "Mac" then
+if osname == "Mac" or osname == "Darwin" then
+    jdk17ForRun = "/usr/bin/java"
 end
 
 local function jdtls_setup(event)
@@ -148,6 +148,7 @@ local function jdtls_setup(event)
           -- And search for `interface RuntimeOption`
           -- The `name` is NOT arbitrary, but must match one of the elements from `enum ExecutionEnvironment` in the link above
           configuration = {
+            updateBuildConfiguration = 'interactive',
             runtimes = {
               {
                 name = "JavaSE-17",

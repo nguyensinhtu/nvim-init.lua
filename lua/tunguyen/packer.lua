@@ -102,6 +102,7 @@ return require('packer').startup(function(use)
     use { 'mfussenegger/nvim-jdtls' }
 
     use { 'folke/tokyonight.nvim' }
+    -- use { 'Mofiqul/dracula.nvim' }
 
     use {
       "nvim-neotest/neotest",
@@ -113,5 +114,29 @@ return require('packer').startup(function(use)
           "nvim-neotest/neotest-python"
       }
     }
+
+    use {
+        "f-person/git-blame.nvim",
+        config = function()
+            require("gitblame").setup({
+                enabled = true,
+                message_template = '<summary> • <date> • <author>',
+
+            })
+        end
+    }
+
+    -- scala
+    use({'scalameta/nvim-metals', requires = { "nvim-lua/plenary.nvim" }})
+
+
+    -- dap for debuging and running application
+    use({ 'mfussenegger/nvim-dap', tag = '0.6.0' })
+
+    -- dbt setup
+    use {'PedramNavid/dbtpal',
+        requires = { { 'nvim-lua/plenary.nvim' }, {'nvim-telescope/telescope.nvim'} }
+    }
+
 end)
 

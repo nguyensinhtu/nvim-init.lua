@@ -17,6 +17,7 @@ null_ls.setup({
         null_ls.builtins.formatting.prettier.with({ extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" } }),
         null_ls.builtins.formatting.sqlfluff.with({extra_args = { "--dialect", "redshift" }, }),
         null_ls.builtins.formatting.isort.with({ "--stdout", "--filename", "$FILENAME", "-" }),
+        null_ls.builtins.formatting.xmllint.with({ "--format" }),
     }
 })
 

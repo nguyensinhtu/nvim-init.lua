@@ -8,7 +8,7 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
 -- search
-vim.opt.hlsearch = false
+vim.opt.hlsearch = true
 vim.opt.incsearch = true
 
 -- number of ending lines 
