@@ -47,7 +47,6 @@ end
 local on_attach = function(client, bufnr)
   -- Regular Neovim LSP client keymappings
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  nnoremap('gD', vim.lsp.buf.declaration, bufopts, "Go to declaration")
   nnoremap('gd', vim.lsp.buf.definition, bufopts, "Go to definition")
   nnoremap('gi', vim.lsp.buf.implementation, bufopts, "Go to implementation")
   nnoremap('K', vim.lsp.buf.hover, bufopts, "Hover text")
