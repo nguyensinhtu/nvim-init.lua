@@ -128,5 +128,15 @@ return require('packer').startup(function(use)
 
     -- scala
     use({'scalameta/nvim-metals', requires = { "nvim-lua/plenary.nvim" }})
+
+
+    -- dap for debuging and running application
+    use({ 'mfussenegger/nvim-dap', tag = '0.6.0' })
+
+    -- dbt setup
+    use {'PedramNavid/dbtpal',
+        requires = { { 'nvim-lua/plenary.nvim' }, {'nvim-telescope/telescope.nvim'} }
+    }
+
 end)
 
