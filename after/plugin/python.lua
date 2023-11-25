@@ -3,7 +3,41 @@ if not status_ok then
 	return
 end
 
--- format on save
+
+-- Set up virtualenv selector
+
+require("venv-selector").setup({})
+local lspconfig = require("lspconfig")
+
+-- Ruff hook
+function ruff_hook(venv_path, _)
+    local hooks = require("venv-selector.hooks")
+    hooks.execute_for_client("ruff-lsp", function(ruff_lsp)
+        local settings = vim.deepcopy(ruff_lsp.config.settings)
+        settings.interpreter = venv_python
+        lspconfig.ruff_lsp.setup({
+            init_options = {
+                settings = settings,
+            },
+        })
+    end)
+end
+
+-- Auto select virtualenv when opening project.
+vim.api.nvim_create_autocmd("VimEnter", {
+    desc = "Auto select virtualenv Nvim open",
+    pattern = "*.py,pyproject.toml,dbt_project.yml",
+    callback = function()
+      local venv = vim.fn.findfile("pyproject.toml", vim.fn.getcwd() .. ";")
+      if venv ~= "" then
+        require("venv-selector").retrieve_from_cache()
+      end
+end,
+once = true,
+})
+-- END --
+
+-- Format on save
 local format_sync_grp = vim.api.nvim_create_augroup("PyFmt", {})
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.py",
@@ -48,8 +82,17 @@ require("neotest").setup({
   }
 })
 
+-- Run all tests in current file
 create_cmd('PyTestFile', function(opts)
     require("neotest").run.run(vim.fn.expand("%"))
+end, {})
+
+-- Ruff fix all in current file
+create_cmd('RuffFix', function(opts)
+    vim.lsp.buf.code_action({
+        context = { only = { "source.fixAll.ruff" } },
+        apply = true,
+    })
 end, {})
 
 
