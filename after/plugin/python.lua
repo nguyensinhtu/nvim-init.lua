@@ -15,7 +15,7 @@ local lspconfig = require("lspconfig")
 
 -- Supporting when using pyproject.toml,
 -- problem: when using `peotry add` to add packages to pyproject.toml lsp server didn't know about it
--- solution: watch poetry.lock changes and restart lsp server
+-- solution: watch poetry.lock changes and restart pyright server
 local w = vim.loop.new_fs_event()
 local function py_on_file_change(err, fname, status)
 	if err then
@@ -46,6 +46,7 @@ function py_watch_file(fname)
 end
 
 -- Ruff hook
+-- look at: https://github.com/linux-cultist/venv-selector.nvim#hooks
 function ruff_hook(venv_path, _)
 	local hooks = require("venv-selector.hooks")
 	hooks.execute_for_client("ruff-lsp", function(ruff_lsp)
