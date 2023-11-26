@@ -18,6 +18,7 @@ null_ls.setup({
         null_ls.builtins.formatting.sqlfluff.with({extra_args = { "--dialect", "redshift" }, }),
         null_ls.builtins.formatting.isort.with({ "--stdout", "--filename", "$FILENAME", "-" }),
         null_ls.builtins.formatting.xmllint.with({ "--format" }),
+        null_ls.builtins.formatting.stylua,
     }
 })
 
