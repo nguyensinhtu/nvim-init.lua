@@ -14,8 +14,8 @@ require("venv-selector").setup({
 local lspconfig = require("lspconfig")
 
 -- Supporting when using pyproject.toml,
--- problem: when using peotry add packages to pyproject.toml lsp server didn't know about it
--- solution: watch pyproject.toml or poetry.lock changes and restart lsp server
+-- problem: when using `peotry add` to add packages to pyproject.toml lsp server didn't know about it
+-- solution: watch poetry.lock changes and restart lsp server
 local w = vim.loop.new_fs_event()
 local function py_on_file_change(err, fname, status)
 	if err then
