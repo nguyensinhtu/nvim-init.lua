@@ -115,6 +115,9 @@ return require('packer').startup(function(use)
       }
     }
 
+    -- python virtual env selector
+    use { 'linux-cultist/venv-selector.nvim' }
+
     use {
         "f-person/git-blame.nvim",
         config = function()
