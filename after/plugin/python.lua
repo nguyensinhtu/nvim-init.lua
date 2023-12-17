@@ -8,7 +8,7 @@ local venv_selector = require("venv-selector")
 require("venv-selector").setup({
 	changed_venv_hooks = {
 		ruff_hook,
-		venv_selector.hooks.yright,
+		venv_selector.hooks.pyright,
 	},
 })
 local lspconfig = require("lspconfig")
