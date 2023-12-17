@@ -238,3 +238,22 @@ vim.api.nvim_create_autocmd('FileType', {
 --   end,
 --   group = metals_augroup,
 -- })
+--
+
+
+
+
+-- DBT Setup --
+if not lspconfig.dbtls then
+    lspconfig.dbtls = {
+        default_config = {
+            root_dir = lspconfig.util.root_pattern('dbt_project.yml'),
+            cmd = { 'dbt-language-server', '--stdio' },
+            filetypes = {"sql"},
+            init_options = { pythonInfo = { path = 'python' }, lspMode = 'dbtProject', enableSnowflakeSyntaxCheck = false }
+
+            settings = {},
+      },
+  }
+end
+lspconfig.dbtls.setup{}
