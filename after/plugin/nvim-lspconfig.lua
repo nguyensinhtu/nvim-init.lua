@@ -247,11 +247,10 @@ vim.api.nvim_create_autocmd('FileType', {
 if not lspconfig.dbtls then
     lspconfig.dbtls = {
         default_config = {
-            root_dir = lspconfig.util.root_pattern('dbt_project.yml'),
+            root_dir = util.root_pattern('dbt_project.yml'),
             cmd = { 'dbt-language-server', '--stdio' },
             filetypes = {"sql"},
-            init_options = { pythonInfo = { path = 'python' }, lspMode = 'dbtProject', enableSnowflakeSyntaxCheck = false }
-
+            init_options = { pythonInfo = { path = 'python3' }, lspMode = 'dbtProject', enableSnowflakeSyntaxCheck = false },
             settings = {},
       },
   }
