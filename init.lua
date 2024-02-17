@@ -175,12 +175,6 @@ require("lazy").setup({
 			"nvim-treesitter/nvim-treesitter",
 		},
 	},
-
-	{
-		-- python virtual env selector
-		"linux-cultist/venv-selector.nvim",
-	},
-
 	{
 		"f-person/git-blame.nvim",
 		config = function()
