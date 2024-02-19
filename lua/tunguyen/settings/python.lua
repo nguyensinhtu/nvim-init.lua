@@ -45,7 +45,14 @@ vim.api.nvim_create_autocmd("VimEnter", {
 			return
 		end
 
+        -- Search for site-packages of current virtualenv
 		local pythonpath = vim.api.nvim_call_function("fnamemodify", { exepath, ":h:h" })
+
+        -- Check string starts with current path
+        if not pythonpath:find(vim.fn.getcwd(), 1, true) then
+            return
+        end
+
 		local cmd = "fd -HItd -tl --absolute-path --max-depth 3 --color never site-packages " .. pythonpath
 		local openPop = assert(io.popen(cmd, "r"))
 		local site_packages = openPop:read()
