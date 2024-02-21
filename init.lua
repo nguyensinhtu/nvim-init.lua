@@ -208,7 +208,16 @@ require("lazy").setup({
         "github/copilot.vim",
     },
 
+    {
+        -- Watch file changes
+        'rktjmp/fwatch.nvim',
+    },
+
 	-- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
 	-- For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins.
 	-- { import = "tunguyen.plugins" },
 })
+
+
+-- Loading personal settings
+require('tunguyen.settings.python')
