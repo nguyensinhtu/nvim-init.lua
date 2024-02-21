@@ -29,7 +29,34 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	desc = "Auto select virtualenv Nvim open",
 	pattern = "*",
 	callback = function()
-		local pyproject_toml = vim.fn.findfile("pyproject.toml", vim.fn.getcwd() .. ";")
+		-- First check if current virtualenv is activated
+		local exepath = vim.fn.exepath("python")
+		if exepath == "" then
+			vim.notify("[pyright] Error: Can't find python executable")
+			return
+		end
+
+		-- Get absolute path of python executable
+		local pythonpath = vim.api.nvim_call_function("fnamemodify", { exepath, ":h:h" })
+
+		-- Search for site-packages of current virtualenv
+		local site_packages = nil
+		if pythonpath:find(vim.fn.getcwd(), 1, true) then
+			local cmd = "fd -HItd -tl --absolute-path --max-depth 3 --color never site-packages " .. pythonpath
+			local openPop = assert(io.popen(cmd, "r"))
+			site_packages = openPop:read()
+			openPop:close()
+		end
+
+		if site_packages ~= nil and site_packages ~= "" then
+			vim.notify("[pyright] Watching site-packages: " .. site_packages)
+			py_watch_file(site_packages)
+            return
+		end
+
+        -- In case of poetry project
+		-- Check if pyproject.toml and poetry.lock exists
+		local pyproject_toml = vim.fn.findfile("pyproject.toml", ".;", true)
 		-- Watching pyproject.lock changes and restart pyright
 		local poetry_lock = vim.fn.findfile("poetry.lock", vim.fn.getcwd() .. ";")
 
@@ -37,30 +64,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
 			vim.notify("[pyright] Watching poetry.lock")
 			py_watch_file(poetry_lock)
 			return
-		end
-
-		local exepath = vim.fn.exepath("python")
-		if exepath == "" then
-			vim.notify("[pyright] Error: Can't find python executable")
-			return
-		end
-
-        -- Search for site-packages of current virtualenv
-		local pythonpath = vim.api.nvim_call_function("fnamemodify", { exepath, ":h:h" })
-
-        -- Check string starts with current path
-        if not pythonpath:find(vim.fn.getcwd(), 1, true) then
-            return
-        end
-
-		local cmd = "fd -HItd -tl --absolute-path --max-depth 3 --color never site-packages " .. pythonpath
-		local openPop = assert(io.popen(cmd, "r"))
-		local site_packages = openPop:read()
-		openPop:close()
-
-		if site_packages ~= "" then
-			vim.notify("[pyright] Watching site-packages: " .. site_packages)
-			py_watch_file(site_packages)
 		end
 	end,
 	once = true,
