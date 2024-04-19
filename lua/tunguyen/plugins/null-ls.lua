@@ -30,6 +30,7 @@ null_ls.setup({
                 "-",
             },
             extra_args = function(params)
+                -- TODO: cache this path.
                 local sqlfluff_cfg_path = vim.fn.findfile(".sqlfluff", params.bufname .. ";")
                 if sqlfluff_cfg_path ~= "" then
                     local fullpath = vim.fn.fnamemodify(sqlfluff_cfg_path, ":p")
