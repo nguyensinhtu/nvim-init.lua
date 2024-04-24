@@ -43,7 +43,6 @@ require("lazy").setup({
 				end,
 			},
 		},
-		config = load_config("telescope"),
 	},
 
 	{
@@ -146,7 +145,14 @@ require("lazy").setup({
 	},
 
 	-- [[ Go setup ]]
-	{ "ray-x/go.nvim" },
+	{
+		"ray-x/go.nvim",
+		config = function()
+			require("go").setup()
+		end,
+		event = { "CmdlineEnter" },
+		ft = { "go", "gomod" },
+	},
 
 	{
 		-- recommended if need floating window support
@@ -200,24 +206,100 @@ require("lazy").setup({
 	{
 		-- Themes
 		"folke/tokyonight.nvim",
-		config = load_config("tokyonight"),
 	},
 
-    {
-        -- Copilot
-        "github/copilot.vim",
-    },
+	{
+		-- Copilot
+		"github/copilot.vim",
+	},
 
-    {
-        -- Watch file changes
-        'rktjmp/fwatch.nvim',
-    },
+	{
+		-- Watch file changes
+		"rktjmp/fwatch.nvim",
+	},
+
+	{
+		"jose-elias-alvarez/null-ls.nvim",
+		config = load_config("null-ls"),
+	},
+
+	{ "catppuccin/nvim", name = "catppuccin", priority = 1000 },
 
 	-- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
 	-- For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins.
 	-- { import = "tunguyen.plugins" },
+
+	{
+		"rmagatti/auto-session",
+		config = function()
+			require("auto-session").setup({
+				log_level = "error",
+				auto_session_suppress_dirs = {
+					"~/",
+					"~/Projects",
+					"~/Downloads",
+					"/Documents",
+					"~/Pictures",
+					"~/Desktop",
+				},
+			})
+		end,
+	},
+
+	{
+		"PedramNavid/dbtpal",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope.nvim",
+		},
+		ft = {
+			"sql",
+			"md",
+			"yaml",
+		},
+		keys = {
+			{ "<leader>drf", "<cmd>DbtRun<cr>" },
+			{ "<leader>drp", "<cmd>DbtRunAll<cr>" },
+			{ "<leader>dtf", "<cmd>DbtTest<cr>" },
+			{ "<leader>dm", "<cmd>lua require('dbtpal.telescope').dbt_picker()<cr>" },
+		},
+		config = function()
+			require("dbtpal").setup({
+				path_to_dbt = "dbt",
+				path_to_dbt_project = "",
+				path_to_dbt_profiles_dir = vim.fn.expand("~/.dbt"),
+				extended_path_search = true,
+				protect_compiled_files = true,
+			})
+			require("telescope").load_extension("dbtpal")
+		end,
+	},
 })
 
-
 -- Loading personal settings
-require('tunguyen.settings.python')
+require("tunguyen.settings.python")
+
+require("tunguyen.settings.themes")
+
+require("tunguyen.settings.telescope")
+
+local function close_nvim_tree()
+	require("nvim-tree.view").close()
+end
+
+local function open_nvim_tree()
+	require("nvim-tree.api").tree.open()
+end
+require("auto-session").setup({
+	log_level = "error",
+	pre_save_cmds = { close_nvim_tree },
+	post_save_cmds = { open_nvim_tree },
+	post_open_cmds = { open_nvim_tree },
+	post_restore_cmds = { open_nvim_tree },
+	cwd_change_handling = {
+		restore_upcoming_session = true, -- <-- THE DOCS LIE!! This is necessary!!
+	},
+})
+
+-- Load dbt commands
+require("tunguyen.dbt")
