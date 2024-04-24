@@ -115,7 +115,9 @@ M._create_job = function(cmd, args, arg_spec, bufname)
             return
         end
 
+        vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
         vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, data)
+        client.retry_add(bufnr)
     end
 
     local onexit_failed = function(data)
