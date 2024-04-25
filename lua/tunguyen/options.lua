@@ -11,12 +11,11 @@ vim.opt.expandtab = true
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
 
--- number of ending lines 
+-- number of ending lines
 vim.opt.scrolloff = 8
 
 -- vim.opt.guifont={ "Monospace",  ":h12" }
 vim.opt.guifont = { "Source Code Pro", ":h12" }
-
 
 -- auto complete
 --Set completeopt to have a better completion experience
@@ -26,10 +25,9 @@ vim.opt.guifont = { "Source Code Pro", ":h12" }
 -- noselect: Do not select, force to select one from the menu
 -- shortness: avoid showing extra messages when using completion
 -- updatetime: set updatetime for CursorHold
-vim.opt.completeopt = {'menuone', 'noselect', 'noinsert'}
-vim.opt.shortmess = vim.opt.shortmess + { c = true}
-vim.api.nvim_set_option('updatetime', 300) 
-
+vim.opt.completeopt = { "menuone", "noselect", "noinsert" }
+vim.opt.shortmess = vim.opt.shortmess + { c = true }
+vim.api.nvim_set_option("updatetime", 300)
 
 -- color of floating window
 -- vim.api.nvim_set_hl(0, 'FloatBorder', {bg='#3B4252', fg='#5E81AC'})
@@ -43,4 +41,3 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python_provider = 0
 vim.g.loaded_python3_provider = 0
-
