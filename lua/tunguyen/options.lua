@@ -41,3 +41,8 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python_provider = 0
 vim.g.loaded_python3_provider = 0
+
+-- Switch between paste/nopaste with F2
+vim.api.nvim_set_keymap("n", "<F2>", ":set invpaste paste?<CR>", { noremap = true, silent = true })
+vim.o.pastetoggle = "<F2>"
+vim.o.showmode = true
