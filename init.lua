@@ -132,10 +132,15 @@ require("lazy").setup({
 		config = load_config("toggleterm"),
 	},
 
+	-- {
+	-- 	-- File explorer
+	-- 	"nvim-tree/nvim-tree.lua",
+	-- 	config = load_config("nvim-tree"),
+	-- },
 	{
-		-- File explorer
-		"nvim-tree/nvim-tree.lua",
-		config = load_config("nvim-tree"),
+		"stevearc/oil.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = load_config("oil"),
 	},
 
 	-- [[ Rust setup ]]
@@ -223,7 +228,10 @@ require("lazy").setup({
 		config = load_config("null-ls"),
 	},
 
+	-- Themes
 	{ "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+	{ "Mofiqul/vscode.nvim", priority = 1001 },
+	{ "projekt0n/github-nvim-theme", priority = 1001 },
 
 	-- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
 	-- For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins.
@@ -287,15 +295,24 @@ local function close_nvim_tree()
 	require("nvim-tree.view").close()
 end
 
-local function open_nvim_tree()
-	require("nvim-tree.api").tree.open()
+local function open_oil()
+	require("oil.actions").open_cwd.callback()
 end
+
 require("auto-session").setup({
 	log_level = "error",
-	pre_save_cmds = { close_nvim_tree },
-	post_save_cmds = { open_nvim_tree },
-	post_open_cmds = { open_nvim_tree },
-	post_restore_cmds = { open_nvim_tree },
+	pre_save_cmds = {
+		function()
+			require("oil.actions").close.callback()
+		end,
+	},
+	post_save_cmds = {
+		function()
+			require("oil.actions").open.callback()
+		end,
+	},
+	post_open_cmds = { open_oil },
+	post_restore_cmds = { open_oil },
 	cwd_change_handling = {
 		restore_upcoming_session = true, -- <-- THE DOCS LIE!! This is necessary!!
 	},
