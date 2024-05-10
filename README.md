@@ -22,3 +22,9 @@ Macos
 brew install coursier/formulas/coursier
 cs setup
 ```
+
+## Awesome Tools
+- Quick CSV Viewer
+```bash
+brew install tidy-viewer
+```
