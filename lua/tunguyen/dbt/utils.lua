@@ -62,7 +62,7 @@ M.build_generator_path_args = function(cmd, args, config, args_spec)
 
         if payload[arg_name] == nil then
             if required then
-                error("Missing required argument: " .. arg_name .. ", argument spec: " .. vim.inspect(spec))
+                error("Missing required argument: " .. arg_name .. ", argument spec: " .. vim.inspect(args_spec))
                 return
             end
 

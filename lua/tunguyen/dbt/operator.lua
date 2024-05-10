@@ -1,9 +1,7 @@
-local vfn = vim.fn
 local client = require("tunguyen.dbt.client")
 local log = require("tunguyen.utils.log")
 local Utils = require("tunguyen.dbt.utils")
 local J = require("plenary.job")
-local display = require("dbtpal.display")
 
 local M = {}
 
@@ -121,7 +119,7 @@ M._create_job = function(cmd, args, arg_spec, bufname)
     end
 
     local onexit_failed = function(data)
-        display.popup(data)
+        require("notify").notify(data, "error", { timeout = 10000, render = "wrapped-compact", title = "dbt" })
     end
 
     if args == "" then
@@ -148,10 +146,8 @@ M._create_job = function(cmd, args, arg_spec, bufname)
         command = dbt_path,
         args = cmd_args,
         on_exit = function(j, code)
-            if code == 1 then
-                vim.list_extend(response, j:result())
+            if code >= 1 then
                 log.info("dbt command encounted a handled error, see popup for details")
-            elseif code >= 2 then
                 table.insert(response, "Failed to run dbt command. Exit Code: " .. code .. "\n")
                 local a = table.concat(cmd_args, " ") or ""
                 local err = string.format("dbt command failed: dbt_path: %s args: %s\n\n", dbt_path, a)
