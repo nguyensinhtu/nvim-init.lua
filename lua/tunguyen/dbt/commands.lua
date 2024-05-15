@@ -1,5 +1,4 @@
 local log = require("tunguyen.utils.log")
-local client = require("tunguyen.dbt.client")
 
 local M = {}
 
@@ -11,6 +10,7 @@ local get_dbt_version = function()
 end
 
 M.build_sqlfluff_path_args = function(cmd, args)
+    local client = require("tunguyen.dbt.client")
     local sqlfluff_path = "sqlfluff"
 
     local cmd_args = {}
@@ -30,12 +30,13 @@ M.build_sqlfluff_path_args = function(cmd, args)
     vim.list_extend(cmd_args, args)
     vim.list_extend(cmd_args, post_cmd_args)
 
-    log.debug("Building sqlfluff command: " .. sqlfluff_path .. " " .. table.concat(cmd_args, " "))
+    -- log.debug("Building sqlfluff command: " .. sqlfluff_path .. " " .. table.concat(cmd_args, " "))
 
     return sqlfluff_path, cmd_args
 end
 
 M.build_dbt_path_args = function(cmd, args)
+    local client = require("tunguyen.dbt.client")
     local dbt_path = "dbt"
     local dbt_project = client.get_dbt_project_root()
     local dbt_profile = client.get_dbt_project_root()
@@ -44,10 +45,7 @@ M.build_dbt_path_args = function(cmd, args)
 
     local pre_cmd_args = {}
 
-    if get_dbt_version() ~= nil and get_dbt_version() >= 1.5 then
-        -- log.debug("dbt version >= 1.5, using --log-level=INFO")
-        vim.list_extend(pre_cmd_args, { "--log-level=INFO" })
-    end
+    vim.list_extend(pre_cmd_args, { "--log-level=INFO" })
 
     local post_cmd_args = {}
     if dbt_profile ~= "v:null" then

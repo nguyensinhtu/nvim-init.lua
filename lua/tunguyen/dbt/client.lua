@@ -9,13 +9,10 @@ M._get_clients = function()
         name = "dbtls",
     })
 
-    for _, c in ipairs(clients) do
-        if c.name == "dbtls" then
-            return c
-        end
+    if #clients == 0 then
+        return nil
     end
-
-    return nil
+    return clients[1]
 end
 
 M.get_dbt_client = function()
