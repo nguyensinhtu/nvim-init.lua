@@ -60,6 +60,14 @@ vim.api.nvim_create_user_command("DbtFix", function()
     model.fix()
 end, { nargs = 0 })
 
+-- Clone dbt models
+local clone = require("tunguyen.dbt.clone")
+vim.api.nvim_create_user_command("DbtCloneModel", function()
+    clone.clone_model()
+end, { nargs = 0 })
+
+
+-- keymaps
 vim.api.nvim_set_keymap("n", "<leader>dm", ":lua require('notify').dismiss()<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<leader>dh", "<", { noremap = true, silent = true })
 
