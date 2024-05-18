@@ -1,4 +1,14 @@
-require("oil").setup({})
+require("oil").setup({
+
+    view_options = {
+        is_hidden_file = function(name, bufnr)
+            if vim.tbl_contains({ ".dlt", ".env" }, name) then
+                return false
+            end
+            return vim.startswith(name, ".")
+        end,
+    },
+})
 
 vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
 
