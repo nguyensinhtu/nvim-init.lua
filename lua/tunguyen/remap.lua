@@ -22,7 +22,21 @@ vim.keymap.set("x", "<leader>p", "\"_dP")
 vim.keymap.set("n", "<leader>yy", "\"+y")
 vim.keymap.set("v", "<leader>yy", "\"+y")
 
+
+-- yank current filepath to system clipboard
+vim.keymap.set("n", "<leader>yp", ":let @+ = expand('%')<CR>")
+vim.keymap.set("v", "<leader>yp", ":let @+ = expand('%')<CR>")
+
 -- yank all file
 vim.keymap.set("n", "<leader>yf", "gg\"+yG")
 vim.keymap.set("v", "<leader>yf", "gg\"+yG")
 
+
+-- unmap
+-- unmap gd (go to global definition is very slow)
+vim.keymap.set("n", "gd", "<NOP>")
+vim.keymap.set("v", "gd", "<NOP>")
+
+-- Advance cursor by 5 lines
+vim.keymap.set("n", "\\", "5<Down>")
+vim.keymap.set("n", "|", "5<Up>")

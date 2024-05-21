@@ -3,6 +3,11 @@ if not status_ok then
 	return
 end
 
+local create_cmd = function(cmd, func, opt)
+  opt = vim.tbl_extend('force', { desc = 'go.nvim ' .. cmd }, opt or {})
+  vim.api.nvim_create_user_command(cmd, func, opt)
+end
+
 toggleterm.setup({
 	size = 20,
 	open_mapping = [[<c-\>]],
@@ -39,7 +44,16 @@ end
 vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 
 local Terminal = require("toggleterm.terminal").Terminal
-local lazygit = Terminal:new({ cmd = "lazygit", hidden = true })
+local lazygit = Terminal:new({
+    cmd = "lazygit",
+    hidden = true,
+    -- function to run on opening the terminal
+    on_open = function(term)
+        vim.cmd("startinsert!")
+        vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", {noremap = true, silent = true})
+        vim.api.nvim_buf_del_keymap(term.bufnr, "t", "<esc>")
+    end,
+})
 
 function _LAZYGIT_TOGGLE()
 	lazygit:toggle()
@@ -65,7 +79,6 @@ function _HTOP_TOGGLE()
 end
 
 local python = Terminal:new({ cmd = "python", hidden = true })
-
 function _PYTHON_TOGGLE()
 	python:toggle()
 end
